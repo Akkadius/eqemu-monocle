@@ -2,12 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Models\NpcTypes;
-use App\Models\Spawn2;
-use App\Models\SpawnEntry;
-use App\Models\SpawnGroup;
+use App\Services\DataDumpImportService;
 use App\Services\DataDumpReaderService;
 use Illuminate\Console\Command;
+use Storage;
 
 /**
  * Class ZoneTools
@@ -20,7 +18,11 @@ class ZoneTools extends Command
      *
      * @var string
      */
-    protected $signature = 'zonetools:dump-import';
+    protected $signature = 'zonetools:dump-import
+        {zone_short_name}
+        {zone_instance_version}
+        {dump_type}
+    ';
 
     /**
      * The console command description.
@@ -45,108 +47,55 @@ class ZoneTools extends Command
      * @param DataDumpReaderService $data_dump_reader_service
      * @return mixed
      * @throws \League\Csv\Exception
+     * @throws \Exception
      */
-    public function handle(DataDumpReaderService $data_dump_reader_service)
+    public function handle(DataDumpImportService $data_dump_import_service)
     {
-        // $npc = NpcTypes::find(55094);
-//
-        // dd($npc);
+        /**
+         * Get args
+         */
+        $zone_short_name       = $this->argument('zone_short_name');
+        $zone_instance_version = $this->argument('zone_instance_version');
+        $dump_type             = $this->argument('dump_type');
 
         /**
-         * Setup reader service
+         * Loop through local files
          */
-        $data_dump_reader_service
-            ->setFile('Thundercrest_NPC_2018-10-06-16-17-12.csv')
-            ->initReader()
-            ->parse();
+        $files          = Storage::files('.');
+        $file_to_read   = "";
+        $file_timestamp = "";
 
-        $interested_fields = [
-            "body_type",
-            "get_class", // class
-            "heading",
-            "height", // size
-            "lastname",
-            "m_actor_client_class",
-            "m_actor_client_details",
-            "m_actor_client_eye_color1",
-            "m_actor_client_eye_color2",
-            "m_actor_client_face_style",
-            "m_actor_client_facial_hair",
-            "m_actor_client_facial_hair_color",
-            "m_actor_client_gender",
-            "m_actor_client_hair_color",
-            "m_actor_client_hair_style",
-            "m_actor_client_head_type",
-            "m_actor_client_heritage",
-            "m_actor_client_material",
-            "m_actor_client_race", // race
-            "m_actor_client_tattoo",
-            "m_actor_client_texture_type", // texture
-            "m_actor_client_variation",
-            "max_speak_distance",
-            "name",
-            "see_invis0",
-            "x",
-            "y",
-            "z"
-            // "avatar_height", // Which height do we use
-            // "melee_radius",
-            // "walk_speed",
-            // Findable?
-            // Trackable?
-        ];
+        foreach ($files as $file) {
+            $file                      = strtolower($file);
+            $file_clean                = str_replace(".csv", "", $file);
+            $file_parameters           = explode("_", $file_clean);
+            $zone_short_name_parameter = array_get($file_parameters, 0, '');
+            $dump_type_parameter       = array_get($file_parameters, 1, '');
+            $time_stamp_parameter      = array_get($file_parameters, 2, '');
 
-        foreach ($data_dump_reader_service->getCsvData() as $row) {
-
-            /**
-             * Create NPC
-             */
-            $npc            = new NpcTypes;
-            $npc->name      = array_get($row, 'name');
-            $npc->level     = array_get($row, 'level');
-            $npc->lastname  = array_get($row, 'lastname');
-            $npc->size      = array_get($row, 'height');
-            $npc->bodytype  = array_get($row, 'body_type');
-            $npc->class     = array_get($row, 'get_class');
-            $npc->race      = array_get($row, 'm_actor_client_race');
-            $npc->texture   = array_get($row, 'm_actor_client_texture_type');
-            $npc->gender    = array_get($row, 'm_actor_client_gender');
-
-            $see_invis      = array_get($row, 'see_invis0');
-            $npc->see_invis = ($see_invis ? 1 : 0);
-            $npc->save();
-
-            /**
-             * Create Spawn Group
-             */
-            $spawn_group       = new SpawnGroup;
-            $spawn_group->name = "test_group_" . md5(rand());
-            $spawn_group->save();
-
-            /**
-             * Create Spawn Entry
-             */
-            $spawn_entry               = new SpawnEntry;
-            $spawn_entry->npcID        = $npc->id;
-            $spawn_entry->chance       = 100;
-            $spawn_entry->spawngroupID = $spawn_group->id;
-            $spawn_entry->save();
-
-            /**
-             * Create Spawn2
-             */
-            $spawn2               = new Spawn2;
-            $spawn2->spawngroupID = $spawn_group->id;
-            $spawn2->zone         = 'thundercrest';
-            $spawn2->x            = array_get($row, 'x');
-            $spawn2->y            = array_get($row, 'y');
-            $spawn2->z            = array_get($row, 'z');
-            $spawn2->heading      = array_get($row, 'heading');
-            $spawn2->save();
-
-            dump($npc->id);
+            if ($zone_short_name == $zone_short_name_parameter && $dump_type == $dump_type_parameter) {
+                if ($this->confirm("Use this file? {$file}")) {
+                    $file_to_read   = $file;
+                    $file_timestamp = $time_stamp_parameter;
+                }
+            }
         }
+
+        if (empty($file_to_read)) {
+            $this->error("No file to read!");
+            exit;
+        }
+
+        $this->info("Reading file '{$file}' time: {$file_timestamp}");
+
+        /**
+         * Process import
+         */
+        $data_dump_import_service
+            ->setFile($file)
+            ->setImportType($dump_type)
+            ->setZoneShortName($zone_short_name)
+            ->setZoneInstanceVersion($zone_instance_version)
+            ->process();
     }
-
-
 }
