@@ -10,17 +10,17 @@ use App\Services\DataDumpReaderService;
 use Illuminate\Console\Command;
 
 /**
- * Class ZoneDumpParser
+ * Class ZoneTools
  * @package App\Console\Commands
  */
-class ZoneDumpParser extends Command
+class ZoneTools extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'zonedump:parse';
+    protected $signature = 'zonetools:dump-import';
 
     /**
      * The console command description.

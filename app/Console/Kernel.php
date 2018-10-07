@@ -2,7 +2,8 @@
 
 namespace App\Console;
 
-use App\Console\Commands\ZoneDumpParser;
+use App\Console\Commands\ZoneDelete;
+use App\Console\Commands\ZoneTools;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -14,7 +15,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        ZoneDumpParser::class
+        ZoneDelete::class,
+        ZoneTools::class
     ];
 
     /**
