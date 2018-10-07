@@ -21,7 +21,7 @@ class ZoneTools extends Command
     protected $signature = 'zonetools:dump-import
         {zone_short_name}
         {zone_instance_version}
-        {dump_type}
+        {dump_type : npc|door|object|grounditem|zonepoints|zone|all}
     ';
 
     /**
@@ -93,9 +93,15 @@ class ZoneTools extends Command
          */
         $data_dump_import_service
             ->setFile($file)
-            ->setImportType($dump_type)
             ->setZoneShortName($zone_short_name)
-            ->setZoneInstanceVersion($zone_instance_version)
-            ->process();
+            ->setZoneInstanceVersion($zone_instance_version);
+
+        if ($dump_type == "npc") {
+            $data_dump_import_service->importNpcData();
+        }
+
+        if ($dump_type == "all") {
+            $data_dump_import_service->importAll();
+        }
     }
 }

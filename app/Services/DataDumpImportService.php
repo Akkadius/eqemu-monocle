@@ -16,7 +16,6 @@ use Exception;
 
 class DataDumpImportService
 {
-
     /**
      * @var DataDumpReaderService
      */
@@ -26,11 +25,6 @@ class DataDumpImportService
      * @var string
      */
     protected $file;
-
-    /**
-     * @var string
-     */
-    protected $import_type;
 
     /**
      * @var string
@@ -61,12 +55,8 @@ class DataDumpImportService
             throw new Exception("Zone short name required for import service");
         }
 
-        if (empty($this->zone_instance_version)) {
+        if (empty($this->zone_instance_version) && $this->zone_instance_version != 0) {
             throw new Exception("Zone instance version required for import service");
-        }
-
-        if (empty($this->import_type)) {
-            throw new Exception("Import type needs to be set!");
         }
 
         if (empty($this->file)) {
@@ -77,24 +67,20 @@ class DataDumpImportService
     /**
      * @throws Exception
      */
-    public function process()
+    public function importAll()
     {
-        $this->validate();
-
-        switch ($this->getImportType()) {
-            case "npc":
-                $this->importNpcData();
-                break;
-            default:
-                throw new Exception("Import type: '{$this->getImportType()}' not found!");
-        }
+        $this->importNpcData();
     }
 
     /**
+     * @return $this
      * @throws \League\Csv\Exception
+     * @throws Exception
      */
     public function importNpcData()
     {
+        $this->validate();
+
         /**
          * Setup reader service
          */
@@ -174,6 +160,8 @@ class DataDumpImportService
         }
 
         dump("Created {$count} NPC's in " . $this->getZoneShortName());
+
+        return $this;
     }
 
     /**
@@ -212,25 +200,6 @@ class DataDumpImportService
         $this->zone_short_name = $zone_short_name;
 
         return $this;
-    }
-
-    /**
-     * @param string $import_type
-     * @return DataDumpImportService
-     */
-    public function setImportType(string $import_type): DataDumpImportService
-    {
-        $this->import_type = $import_type;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getImportType(): string
-    {
-        return $this->import_type;
     }
 
     /**
