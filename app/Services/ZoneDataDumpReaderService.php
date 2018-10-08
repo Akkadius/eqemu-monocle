@@ -15,7 +15,7 @@ use League\Csv\Statement;
 /**
  * Class DataDumpReaderService
  */
-class DataDumpReaderService
+class ZoneDataDumpReaderService
 {
     /**
      * @var string
@@ -44,9 +44,9 @@ class DataDumpReaderService
 
     /**
      * @param string $file
-     * @return DataDumpReaderService
+     * @return ZoneDataDumpReaderService
      */
-    public function setFile(string $file): DataDumpReaderService
+    public function setFile(string $file): ZoneDataDumpReaderService
     {
         $this->file = $file;
 
@@ -65,7 +65,7 @@ class DataDumpReaderService
      * @return $this
      * @throws \League\Csv\Exception
      */
-    public function parse(): DataDumpReaderService
+    public function parse(): ZoneDataDumpReaderService
     {
         $this->parseHeaders()->parseData();
 
@@ -73,9 +73,9 @@ class DataDumpReaderService
     }
 
     /**
-     * @return DataDumpReaderService
+     * @return ZoneDataDumpReaderService
      */
-    public function initReader(): DataDumpReaderService
+    public function initReader(): ZoneDataDumpReaderService
     {
         $this->reader = Reader::createFromPath(storage_path('app') . '/' . $this->file);
 
@@ -86,7 +86,7 @@ class DataDumpReaderService
      * @return $this
      * @throws \League\Csv\Exception
      */
-    private function parseHeaders(): DataDumpReaderService
+    private function parseHeaders(): ZoneDataDumpReaderService
     {
         $statement = (new Statement())
             ->offset(0)
@@ -171,10 +171,10 @@ class DataDumpReaderService
     }
 
     /**
-     * @return DataDumpReaderService
+     * @return ZoneDataDumpReaderService
      * @throws \League\Csv\Exception
      */
-    private function parseData(): DataDumpReaderService
+    private function parseData(): ZoneDataDumpReaderService
     {
         /**
          * Start at row three for reading data
@@ -238,7 +238,7 @@ class DataDumpReaderService
     /**
      * @param Reader $reader
      */
-    public function setReader(Reader $reader): DataDumpReaderService
+    public function setReader(Reader $reader): ZoneDataDumpReaderService
     {
         $this->reader = $reader;
 

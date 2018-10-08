@@ -2,16 +2,16 @@
 
 namespace App\Console\Commands;
 
-use App\Services\DataDumpImportService;
-use App\Services\DataDumpReaderService;
+use App\Services\ZoneDataDumpImportService;
+use App\Services\ZoneDataDumpReaderService;
 use Illuminate\Console\Command;
 use Storage;
 
 /**
- * Class ZoneTools
+ * Class ZoneDataDumpImport
  * @package App\Console\Commands
  */
-class ZoneTools extends Command
+class ZoneDataDumpImport extends Command
 {
     /**
      * The name and signature of the console command.
@@ -44,12 +44,12 @@ class ZoneTools extends Command
     /**
      * Execute the console command.
      *
-     * @param DataDumpReaderService $data_dump_reader_service
+     * @param ZoneDataDumpReaderService $data_dump_reader_service
      * @return mixed
      * @throws \League\Csv\Exception
      * @throws \Exception
      */
-    public function handle(DataDumpImportService $data_dump_import_service)
+    public function handle(ZoneDataDumpImportService $zone_data_dump_import_service)
     {
         /**
          * Get args
@@ -92,23 +92,23 @@ class ZoneTools extends Command
         /**
          * Process import
          */
-        $data_dump_import_service
+        $zone_data_dump_import_service
             ->setFile($file)
             ->setZoneShortName($zone_short_name)
             ->setZoneInstanceVersion($zone_instance_version);
 
         switch ($dump_type) {
             case "npc":
-                $data_dump_import_service->importNpcData();
+                $zone_data_dump_import_service->importNpcData();
                 break;
             case "door":
-                $data_dump_import_service->importDoorData();
+                $zone_data_dump_import_service->importDoorData();
                 break;
             case "zonepoint":
-                $data_dump_import_service->importZonePointData();
+                $zone_data_dump_import_service->importZonePointData();
                 break;
             case "all":
-                $data_dump_import_service->importAll();
+                $zone_data_dump_import_service->importAll();
                 break;
         }
     }

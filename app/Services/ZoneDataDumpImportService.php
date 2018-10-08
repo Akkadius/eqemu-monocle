@@ -16,10 +16,10 @@ use App\Models\SpawnGroup;
 use App\Models\ZonePoint;
 use Exception;
 
-class DataDumpImportService
+class ZoneDataDumpImportService
 {
     /**
-     * @var DataDumpReaderService
+     * @var ZoneDataDumpReaderService
      */
     protected $data_dump_reader_service;
 
@@ -40,9 +40,9 @@ class DataDumpImportService
 
     /**
      * DataDumpImportService constructor.
-     * @param DataDumpReaderService $data_dump_reader_service
+     * @param ZoneDataDumpReaderService $data_dump_reader_service
      */
-    public function __construct(DataDumpReaderService $data_dump_reader_service)
+    public function __construct(ZoneDataDumpReaderService $data_dump_reader_service)
     {
         $this->data_dump_reader_service = $data_dump_reader_service;
     }
@@ -280,9 +280,9 @@ class DataDumpImportService
 
     /**
      * @param string $file
-     * @return DataDumpImportService
+     * @return ZoneDataDumpImportService
      */
-    public function setFile(string $file): DataDumpImportService
+    public function setFile(string $file): ZoneDataDumpImportService
     {
         $this->file = $file;
 
@@ -299,9 +299,9 @@ class DataDumpImportService
 
     /**
      * @param string $zone_short_name
-     * @return DataDumpImportService
+     * @return ZoneDataDumpImportService
      */
-    public function setZoneShortName(string $zone_short_name): DataDumpImportService
+    public function setZoneShortName(string $zone_short_name): ZoneDataDumpImportService
     {
         $this->zone_short_name = $zone_short_name;
 
@@ -310,9 +310,9 @@ class DataDumpImportService
 
     /**
      * @param int $zone_instance_version
-     * @return DataDumpImportService
+     * @return ZoneDataDumpImportService
      */
-    public function setZoneInstanceVersion(int $zone_instance_version): DataDumpImportService
+    public function setZoneInstanceVersion(int $zone_instance_version): ZoneDataDumpImportService
     {
         $this->zone_instance_version = $zone_instance_version;
 
