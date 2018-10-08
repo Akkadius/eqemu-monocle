@@ -21,7 +21,7 @@ class ZoneTools extends Command
     protected $signature = 'zonetools:dump-import
         {zone_short_name}
         {zone_instance_version}
-        {dump_type : npc|door|object|grounditem|zonepoints|zone|all}
+        {dump_type : npc|door|object|grounditem|zonepoint|zone|all}
     ';
 
     /**
@@ -103,6 +103,10 @@ class ZoneTools extends Command
 
         if ($dump_type == "door") {
             $data_dump_import_service->importDoorData();
+        }
+
+        if ($dump_type == "zonepoint") {
+            $data_dump_import_service->importZonePointData();
         }
 
         if ($dump_type == "all") {

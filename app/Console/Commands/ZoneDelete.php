@@ -2,10 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\NpcTypes;
-use App\Models\Spawn2;
-use App\Models\SpawnEntry;
-use App\Models\SpawnGroup;
 use App\Services\ZoneDataDeleteService;
 use Illuminate\Console\Command;
 
@@ -19,7 +15,7 @@ class ZoneDelete extends Command
     protected $signature = 'zonetools:zone-delete 
         {zone_short_name} 
         {zone_instance_version}
-        {delete_type : npc|door|object|grounditem|zonepoints|zone|all}
+        {delete_type : npc|door|object|grounditem|zonepoint|zone|all}
         ';
 
     /**
@@ -42,6 +38,7 @@ class ZoneDelete extends Command
     /**
      * Execute the console command.
      *
+     * @param ZoneDataDeleteService $zone_data_delete_service
      * @return mixed
      * @throws \Exception
      */
@@ -54,6 +51,9 @@ class ZoneDelete extends Command
         $zone_instance_version = $this->argument('zone_instance_version');
         $delete_type           = $this->argument('delete_type');
 
+        /**
+         * Setup data deletion service
+         */
         $zone_data_delete_service
             ->setZoneShortName($zone_short_name)
             ->setZoneInstanceVersion($zone_instance_version);
@@ -64,6 +64,10 @@ class ZoneDelete extends Command
 
         if ($delete_type == "door") {
             $zone_data_delete_service->deleteDoorData();
+        }
+
+        if ($delete_type == "zonepoint") {
+            $zone_data_delete_service->deleteZonePointData();
         }
 
         if ($delete_type == "all") {

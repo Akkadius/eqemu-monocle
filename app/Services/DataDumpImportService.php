@@ -13,6 +13,7 @@ use App\Models\NpcTypes;
 use App\Models\Spawn2;
 use App\Models\SpawnEntry;
 use App\Models\SpawnGroup;
+use App\Models\ZonePoint;
 use Exception;
 
 class DataDumpImportService
@@ -70,8 +71,10 @@ class DataDumpImportService
      */
     public function importAll()
     {
-        $this->importNpcData()
-            ->importDoorData();
+        $this
+            ->importNpcData()
+            ->importDoorData()
+            ->importZonePointData();
     }
 
     /**
@@ -218,6 +221,45 @@ class DataDumpImportService
         }
 
         dump("Created {$count} doors in " .
+            $this->getZoneShortName() . " version " . $this->getZoneInstanceVersion());
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws \League\Csv\Exception
+     * @throws Exception
+     */
+    public function importZonePointData()
+    {
+        $this->validate();
+
+        /**
+         * Setup reader service
+         */
+        $this->data_dump_reader_service
+            ->setFile($this->getFile())
+            ->initReader()
+            ->parse();
+
+        $count = 0;
+        foreach ($this->data_dump_reader_service->getCsvData() as $row) {
+
+            $zone_point                 = new ZonePoint;
+            $zone_point->zone           = $this->getZoneShortName();
+            $zone_point->version        = $this->getZoneInstanceVersion();
+            $zone_point->x              = array_get($row, 'x');
+            $zone_point->y              = array_get($row, 'y');
+            $zone_point->z              = array_get($row, 'z');
+            $zone_point->target_zone_id = array_get($row, 'target_zone_id');
+            $zone_point->number         = array_get($row, 'index');
+            $zone_point->save();
+
+            $count++;
+        }
+
+        dump("Created {$count} zonepoints in " .
             $this->getZoneShortName() . " version " . $this->getZoneInstanceVersion());
 
         return $this;

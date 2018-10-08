@@ -124,6 +124,12 @@ class DataDumpReaderService
                 $column = trim($column);
 
                 /**
+                 * Remove extra spaces
+                 */
+
+                $column = str_replace(" ", "", $column);
+
+                /**
                  * Decamelize to snake_case
                  */
                 $column = $this->decamelize($column);

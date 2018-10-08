@@ -14,6 +14,7 @@ use App\Models\NpcTypes;
 use App\Models\Spawn2;
 use App\Models\SpawnEntry;
 use App\Models\SpawnGroup;
+use App\Models\ZonePoint;
 
 class ZoneDataDeleteService
 {
@@ -40,8 +41,10 @@ class ZoneDataDeleteService
      */
     public function deleteAll()
     {
-        $this->deleteNpcData()
-            ->deleteDoorData();
+        $this
+            ->deleteNpcData()
+            ->deleteDoorData()
+            ->deleteZonePointData();
     }
 
     /**
@@ -116,6 +119,24 @@ class ZoneDataDeleteService
         )->delete();
 
         $this->info("Deleted 'doors' (" . $deleted_count . ")...");
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws \Exception
+     */
+    public function deleteZonePointData()
+    {
+        $deleted_count = ZonePoint::where(
+            [
+                'zone'    => $this->getZoneShortName(),
+                'version' => $this->getZoneInstanceVersion()
+            ]
+        )->delete();
+
+        $this->info("Deleted 'zone_points' (" . $deleted_count . ")...");
 
         return $this;
     }
