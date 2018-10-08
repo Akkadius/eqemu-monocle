@@ -14,4 +14,5 @@ yarn-error.log
 .phpunit.result.cache
 laradock
 npc_dump.txt
-spawns.sql
+*.sql
+.DS_Store

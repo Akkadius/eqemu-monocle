@@ -9,6 +9,7 @@
 namespace App\Services;
 
 
+use App\Models\Doors;
 use App\Models\NpcTypes;
 use App\Models\Spawn2;
 use App\Models\SpawnEntry;
@@ -39,7 +40,8 @@ class ZoneDataDeleteService
      */
     public function deleteAll()
     {
-        $this->deleteNpcData();
+        $this->deleteNpcData()
+            ->deleteDoorData();
     }
 
     /**
@@ -97,6 +99,24 @@ class ZoneDataDeleteService
 
         $this->info("Deleted 'npc_types' (" . count($npc_type_ids) . ")...");
         
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws \Exception
+     */
+    public function deleteDoorData()
+    {
+        $deleted_count = Doors::where(
+            [
+                'zone'    => $this->getZoneShortName(),
+                'version' => $this->getZoneInstanceVersion()
+            ]
+        )->delete();
+
+        $this->info("Deleted 'doors' (" . $deleted_count . ")...");
+
         return $this;
     }
 

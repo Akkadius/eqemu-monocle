@@ -62,6 +62,10 @@ class ZoneDelete extends Command
             $zone_data_delete_service->deleteNpcData();
         }
 
+        if ($delete_type == "door") {
+            $zone_data_delete_service->deleteDoorData();
+        }
+
         if ($delete_type == "all") {
             $zone_data_delete_service->deleteAll();
         }

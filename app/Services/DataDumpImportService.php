@@ -8,6 +8,7 @@
 
 namespace App\Services;
 
+use App\Models\Doors;
 use App\Models\NpcTypes;
 use App\Models\Spawn2;
 use App\Models\SpawnEntry;
@@ -69,7 +70,8 @@ class DataDumpImportService
      */
     public function importAll()
     {
-        $this->importNpcData();
+        $this->importNpcData()
+            ->importDoorData();
     }
 
     /**
@@ -160,6 +162,63 @@ class DataDumpImportService
         }
 
         dump("Created {$count} NPC's in " . $this->getZoneShortName());
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws \League\Csv\Exception
+     * @throws Exception
+     */
+    public function importDoorData()
+    {
+        $this->validate();
+
+        /**
+         * Setup reader service
+         */
+        $this->data_dump_reader_service
+            ->setFile($this->getFile())
+            ->initReader()
+            ->parse();
+
+        $count = 0;
+        foreach ($this->data_dump_reader_service->getCsvData() as $row) {
+
+            // TODO: Verify below
+            // Destination we fill out ourselves I believe
+            // dest_zone
+            // dest_instance
+            // dest_x
+            // dest_y
+            // dest_z
+            // dest_heading
+            // invert_state
+            // incline
+            // buffer
+            // client_version_mask
+            // is_ldon_door
+
+            $door           = new Doors;
+            $door->doorid   = array_get($row, 'id');
+            $door->zone     = $this->getZoneShortName();
+            $door->version  = $this->getZoneInstanceVersion();
+            $door->name     = array_get($row, 'name');
+            $door->pos_x    = array_get($row, 'default_x');
+            $door->pos_y    = array_get($row, 'default_y');
+            $door->pos_z    = array_get($row, 'default_z');
+            $door->heading  = array_get($row, 'default_heading');
+            $door->opentype = array_get($row, 'type');
+            $door->size     = array_get($row, 'scale_factor');
+            $door->keyitem  = (array_get($row, 'key') != -1 ? array_get($row, 'key') : 0);
+            $door->save();
+
+            $count++;
+        }
+
+        dump("Created {$count} doors in " .
+            $this->getZoneShortName() . " version " . $this->getZoneInstanceVersion());
 
         return $this;
     }

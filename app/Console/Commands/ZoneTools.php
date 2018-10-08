@@ -77,6 +77,7 @@ class ZoneTools extends Command
                 if ($this->confirm("Use this file? {$file}")) {
                     $file_to_read   = $file;
                     $file_timestamp = $time_stamp_parameter;
+                    break;
                 }
             }
         }
@@ -98,6 +99,10 @@ class ZoneTools extends Command
 
         if ($dump_type == "npc") {
             $data_dump_import_service->importNpcData();
+        }
+
+        if ($dump_type == "door") {
+            $data_dump_import_service->importDoorData();
         }
 
         if ($dump_type == "all") {
