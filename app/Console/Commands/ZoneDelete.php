@@ -58,20 +58,19 @@ class ZoneDelete extends Command
             ->setZoneShortName($zone_short_name)
             ->setZoneInstanceVersion($zone_instance_version);
 
-        if ($delete_type == "npc") {
-            $zone_data_delete_service->deleteNpcData();
-        }
-
-        if ($delete_type == "door") {
-            $zone_data_delete_service->deleteDoorData();
-        }
-
-        if ($delete_type == "zonepoint") {
-            $zone_data_delete_service->deleteZonePointData();
-        }
-
-        if ($delete_type == "all") {
-            $zone_data_delete_service->deleteAll();
+        switch ($delete_type) {
+            case "npc":
+                $zone_data_delete_service->deleteNpcData();
+                break;
+            case "door":
+                $zone_data_delete_service->deleteDoorData();
+                break;
+            case "zonepoint":
+                $zone_data_delete_service->deleteZonePointData();
+                break;
+            case "all":
+                $zone_data_delete_service->deleteAll();
+                break;
         }
 
         $this->info($zone_data_delete_service->getProcessMessages());

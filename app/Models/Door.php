@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Doors
+ * Class Door
  *
  * @package App\Models
  * @mixin \Eloquent
  */
-class Doors extends Model
+class Door extends Model
 {
     /**
      * @var string

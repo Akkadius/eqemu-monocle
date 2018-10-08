@@ -97,20 +97,19 @@ class ZoneTools extends Command
             ->setZoneShortName($zone_short_name)
             ->setZoneInstanceVersion($zone_instance_version);
 
-        if ($dump_type == "npc") {
-            $data_dump_import_service->importNpcData();
-        }
-
-        if ($dump_type == "door") {
-            $data_dump_import_service->importDoorData();
-        }
-
-        if ($dump_type == "zonepoint") {
-            $data_dump_import_service->importZonePointData();
-        }
-
-        if ($dump_type == "all") {
-            $data_dump_import_service->importAll();
+        switch ($dump_type) {
+            case "npc":
+                $data_dump_import_service->importNpcData();
+                break;
+            case "door":
+                $data_dump_import_service->importDoorData();
+                break;
+            case "zonepoint":
+                $data_dump_import_service->importZonePointData();
+                break;
+            case "all":
+                $data_dump_import_service->importAll();
+                break;
         }
     }
 }

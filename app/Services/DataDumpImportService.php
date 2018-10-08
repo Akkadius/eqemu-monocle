@@ -8,7 +8,7 @@
 
 namespace App\Services;
 
-use App\Models\Doors;
+use App\Models\Door;
 use App\Models\NpcTypes;
 use App\Models\Spawn2;
 use App\Models\SpawnEntry;
@@ -203,7 +203,7 @@ class DataDumpImportService
             // client_version_mask
             // is_ldon_door
 
-            $door           = new Doors;
+            $door           = new Door;
             $door->doorid   = array_get($row, 'id');
             $door->zone     = $this->getZoneShortName();
             $door->version  = $this->getZoneInstanceVersion();
@@ -254,6 +254,11 @@ class DataDumpImportService
             $zone_point->z              = array_get($row, 'z');
             $zone_point->target_zone_id = array_get($row, 'target_zone_id');
             $zone_point->number         = array_get($row, 'index');
+
+            /**
+             * TODO: Missing target x/y/z
+             */
+
             $zone_point->save();
 
             $count++;
