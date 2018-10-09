@@ -68,6 +68,9 @@ class ZoneDelete extends Command
             case "groundspawn":
                 $zone_data_delete_service->deleteGroundSpawnData();
                 break;
+            case "object":
+                $zone_data_delete_service->deleteObjectData();
+                break;
             case "zonepoint":
                 $zone_data_delete_service->deleteZonePointData();
                 break;

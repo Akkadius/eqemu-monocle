@@ -9,6 +9,7 @@
 namespace App\Services;
 
 use App\Models\Door;
+use App\Models\GameObject;
 use App\Models\GroundSpawn;
 use App\Models\NpcTypes;
 use App\Models\Spawn2;
@@ -289,8 +290,7 @@ class ZoneDataDumpImportService
             ->parse();
 
         $zone_id = $this->getZoneIdByShortName($this->getZoneShortName());
-
-        $count = 0;
+        $count   = 0;
         foreach ($this->data_dump_reader_service->getCsvData() as $row) {
             $ground_spawn          = new GroundSpawn;
             $ground_spawn->zoneid  = $zone_id;
@@ -310,7 +310,64 @@ class ZoneDataDumpImportService
 
         dump("Created {$count} ground_spawns in " .
             $this->getZoneShortName() . " version " . $this->getZoneInstanceVersion());
-        
+
+        return $this;
+    }
+
+    /**
+     * @throws \League\Csv\Exception
+     * @throws Exception
+     */
+    public function importObjectData()
+    {
+        $this->validate();
+
+        /**
+         * Setup reader service
+         */
+        $this->data_dump_reader_service
+            ->setFile($this->getFile())
+            ->initReader()
+            ->parse();
+
+        /**
+         * Fetch pre-existing types
+         */
+        $pre_existing_types = GameObject::distinct()
+            ->get(['objectname', 'type', 'icon'])
+            ->where('type', '<', 255)
+            ->where('icon', '>', 0);
+
+        $object_types = [];
+        foreach ($pre_existing_types as $type) {
+            $object_types[$type->objectname]['type'] = $type->type;
+            $object_types[$type->objectname]['icon'] = $type->icon;
+        }
+
+        $zone_id = $this->getZoneIdByShortName($this->getZoneShortName());
+        $count   = 0;
+        foreach ($this->data_dump_reader_service->getCsvData() as $row) {
+            $object             = new GameObject;
+            $object->zoneid     = $zone_id;
+            $object->version    = $this->getZoneInstanceVersion();
+            $object->xpos       = array_get($row, 'x');
+            $object->ypos       = array_get($row, 'y');
+            $object->zpos       = array_get($row, 'z');
+            $object->heading    = array_get($row, 'heading');
+            $object->objectname = array_get($row, 'name');
+            $object->tilt_x     = array_get($row, 'roll');
+            $object->tilt_y     = array_get($row, 'pitch');
+            $object->size       = (array_get($row, 'scale', 1) * 100);
+            $object->type       = array_get($object_types, $object->objectname . '.type', 0);
+            $object->icon       = array_get($object_types, $object->objectname . '.icon', 0);
+            $object->save();
+
+            $count++;
+        }
+
+        dump("Created {$count} objects in " .
+            $this->getZoneShortName() . " version " . $this->getZoneInstanceVersion());
+
         return $this;
     }
 

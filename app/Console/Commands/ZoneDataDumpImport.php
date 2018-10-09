@@ -58,8 +58,14 @@ class ZoneDataDumpImport extends Command
         $zone_instance_version = $this->argument('zone_instance_version');
         $dump_type             = $this->argument('dump_type');
 
+        /**
+         * One-off type transform to match file name
+         */
         if ($dump_type == "groundspawn") {
             $dump_type = "grounditem";
+        }
+        if ($dump_type == "object") {
+            $dump_type = "objects";
         }
 
         /**
@@ -110,6 +116,9 @@ class ZoneDataDumpImport extends Command
                 break;
             case "grounditem":
                 $zone_data_dump_import_service->importGroundSpawnData();
+                break;
+            case "objects":
+                $zone_data_dump_import_service->importObjectData();
                 break;
             case "zonepoint":
                 $zone_data_dump_import_service->importZonePointData();
