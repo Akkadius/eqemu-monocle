@@ -360,7 +360,7 @@ class ZoneDataDumpImportService
             $object->tilt_x     = array_get($row, 'roll');
             $object->tilt_y     = array_get($row, 'pitch');
             $object->size       = (array_get($row, 'scale', 1) * 100);
-            $object->type       = array_get($object_types, $object->objectname . '.type', 0);
+            $object->type       = array_get($object_types, $object->objectname . '.type', 255);
             $object->icon       = array_get($object_types, $object->objectname . '.icon', 0);
             $object->save();
 
