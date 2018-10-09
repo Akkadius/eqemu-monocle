@@ -10,10 +10,12 @@ namespace App\Services;
 
 
 use App\Models\Door;
+use App\Models\GroundSpawn;
 use App\Models\NpcTypes;
 use App\Models\Spawn2;
 use App\Models\SpawnEntry;
 use App\Models\SpawnGroup;
+use App\Models\Zone;
 use App\Models\ZonePoint;
 
 class ZoneDataDeleteService
@@ -139,6 +141,33 @@ class ZoneDataDeleteService
         $this->info("Deleted 'zone_points' (" . $deleted_count . ")...");
 
         return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws \Exception
+     */
+    public function deleteGroundSpawnData()
+    {
+        $deleted_count = GroundSpawn::where(
+            [
+                'zoneid'    => $this->getZoneIdByShortName($this->getZoneShortName()),
+                'version' => $this->getZoneInstanceVersion()
+            ]
+        )->delete();
+
+        $this->info("Deleted 'ground_spawns' (" . $deleted_count . ")...");
+
+        return $this;
+    }
+
+    /**
+     * @param string $zone_short_name
+     * @return int|null
+     */
+    public function getZoneIdByShortName(string $zone_short_name): ?int
+    {
+        return Zone::where('short_name', $zone_short_name)->first()->zoneidnumber;
     }
 
     /**

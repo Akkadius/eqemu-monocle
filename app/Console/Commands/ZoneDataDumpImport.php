@@ -21,7 +21,7 @@ class ZoneDataDumpImport extends Command
     protected $signature = 'zonetools:dump-import
         {zone_short_name}
         {zone_instance_version}
-        {dump_type : npc|door|object|grounditem|zonepoint|zone|all}
+        {dump_type : npc|door|object|groundspawn|zonepoint|zone|all}
     ';
 
     /**
@@ -57,6 +57,10 @@ class ZoneDataDumpImport extends Command
         $zone_short_name       = $this->argument('zone_short_name');
         $zone_instance_version = $this->argument('zone_instance_version');
         $dump_type             = $this->argument('dump_type');
+
+        if ($dump_type == "groundspawn") {
+            $dump_type = "grounditem";
+        }
 
         /**
          * Loop through local files
@@ -103,6 +107,9 @@ class ZoneDataDumpImport extends Command
                 break;
             case "door":
                 $zone_data_dump_import_service->importDoorData();
+                break;
+            case "grounditem":
+                $zone_data_dump_import_service->importGroundSpawnData();
                 break;
             case "zonepoint":
                 $zone_data_dump_import_service->importZonePointData();

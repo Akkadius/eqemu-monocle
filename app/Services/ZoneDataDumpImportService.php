@@ -9,10 +9,12 @@
 namespace App\Services;
 
 use App\Models\Door;
+use App\Models\GroundSpawn;
 use App\Models\NpcTypes;
 use App\Models\Spawn2;
 use App\Models\SpawnEntry;
 use App\Models\SpawnGroup;
+use App\Models\Zone;
 use App\Models\ZonePoint;
 use Exception;
 
@@ -268,6 +270,57 @@ class ZoneDataDumpImportService
             $this->getZoneShortName() . " version " . $this->getZoneInstanceVersion());
 
         return $this;
+    }
+
+    /**
+     * @throws \League\Csv\Exception
+     * @throws Exception
+     */
+    public function importGroundSpawnData()
+    {
+        $this->validate();
+
+        /**
+         * Setup reader service
+         */
+        $this->data_dump_reader_service
+            ->setFile($this->getFile())
+            ->initReader()
+            ->parse();
+
+        $zone_id = $this->getZoneIdByShortName($this->getZoneShortName());
+
+        $count = 0;
+        foreach ($this->data_dump_reader_service->getCsvData() as $row) {
+            $ground_spawn          = new GroundSpawn;
+            $ground_spawn->zoneid  = $zone_id;
+            $ground_spawn->version = $this->getZoneInstanceVersion();
+            $ground_spawn->min_x   = array_get($row, 'x');
+            $ground_spawn->max_x   = array_get($row, 'x');
+            $ground_spawn->min_y   = array_get($row, 'y');
+            $ground_spawn->max_y   = array_get($row, 'y');
+            $ground_spawn->max_z   = array_get($row, 'z');
+            $ground_spawn->heading = array_get($row, 'heading');
+            $ground_spawn->name    = array_get($row, 'name');
+            $ground_spawn->comment = "Imported via monocole";
+            $ground_spawn->save();
+
+            $count++;
+        }
+
+        dump("Created {$count} ground_spawns in " .
+            $this->getZoneShortName() . " version " . $this->getZoneInstanceVersion());
+        
+        return $this;
+    }
+
+    /**
+     * @param string $zone_short_name
+     * @return int|null
+     */
+    public function getZoneIdByShortName(string $zone_short_name): ?int
+    {
+        return Zone::where('short_name', $zone_short_name)->first()->zoneidnumber;
     }
 
     /**

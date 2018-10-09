@@ -15,7 +15,7 @@ class ZoneDelete extends Command
     protected $signature = 'zonetools:zone-delete 
         {zone_short_name} 
         {zone_instance_version}
-        {delete_type : npc|door|object|grounditem|zonepoint|zone|all}
+        {delete_type : npc|door|object|groundspawn|zonepoint|zone|all}
         ';
 
     /**
@@ -64,6 +64,9 @@ class ZoneDelete extends Command
                 break;
             case "door":
                 $zone_data_delete_service->deleteDoorData();
+                break;
+            case "groundspawn":
+                $zone_data_delete_service->deleteGroundSpawnData();
                 break;
             case "zonepoint":
                 $zone_data_delete_service->deleteZonePointData();
