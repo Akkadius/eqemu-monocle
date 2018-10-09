@@ -173,6 +173,15 @@ class ZoneDataDumpImportService
             $npc->d_melee_texture2  = array_get($row, 'equipment_offhandid');
 
             /**
+             * Targetable
+             */
+            $target_able       = array_get($row, 'targetable', false);
+            $npc->untargetable = ($target_able ? 0 : 1);
+            if (!$target_able) {
+                $npc->bodytype = 11;
+            }
+
+            /**
              * See invis
              */
             $see_invis      = array_get($row, 'see_invis0');
