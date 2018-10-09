@@ -47,6 +47,8 @@ class ZoneDataDeleteService
         $this
             ->deleteNpcData()
             ->deleteDoorData()
+            ->deleteObjectData()
+            ->deleteGroundSpawnData()
             ->deleteZonePointData();
     }
 

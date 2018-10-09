@@ -77,7 +77,9 @@ class ZoneDataDumpImportService
         $this
             ->importNpcData()
             ->importDoorData()
-            ->importZonePointData();
+            ->importZonePointData()
+            ->importGroundSpawnData()
+            ->importObjectData();
     }
 
     /**
