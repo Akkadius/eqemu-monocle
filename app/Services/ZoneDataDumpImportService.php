@@ -122,8 +122,9 @@ class ZoneDataDumpImportService
         $count = 0;
         foreach ($this->data_dump_reader_service->getCsvData() as $row) {
 
-            $last_name   = array_get($row, 'lastname');
-            $entity_type = array_get($row, 'type');
+            $last_name      = array_get($row, 'lastname');
+            $displayed_name = array_get($row, 'displayed_name');
+            $entity_type    = array_get($row, 'type');
 
             if (strpos($last_name, "'s Mercenary") !== false) {
                 continue;
@@ -133,7 +134,7 @@ class ZoneDataDumpImportService
                 continue;
             }
 
-            if (strpos($last_name, "`s Mount") !== false) {
+            if (strpos($displayed_name, "`s Mount") !== false) {
                 continue;
             }
 
