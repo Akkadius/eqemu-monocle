@@ -42,6 +42,11 @@ class ZoneDataDumpImportService
     protected $zone_instance_version;
 
     /**
+     * @var array
+     */
+    protected $created_count = [];
+
+    /**
      * DataDumpImportService constructor.
      * @param ZoneDataDumpReaderService $data_dump_reader_service
      */
@@ -52,9 +57,10 @@ class ZoneDataDumpImportService
 
     /**
      * Validate required parameters before execute
+     * @return ZoneDataDumpImportService
      * @throws Exception
      */
-    protected function validate()
+    protected function validate(): ZoneDataDumpImportService
     {
         if (empty($this->zone_short_name)) {
             throw new Exception("Zone short name required for import service");
@@ -67,19 +73,38 @@ class ZoneDataDumpImportService
         if (empty($this->file)) {
             throw new Exception("Valid csv file required for import service");
         }
+
+        return $this;
     }
 
     /**
-     * @throws Exception
+     * @return ZoneDataDumpImportService
+     * @throws \League\Csv\Exception
      */
-    public function importAll()
+    public function readerParse(): ZoneDataDumpImportService
+    {
+        $this->data_dump_reader_service
+            ->setFile($this->getFile())
+            ->initReader()
+            ->parse();
+
+        return $this;
+    }
+
+    /**
+     * @return ZoneDataDumpImportService
+     * @throws \League\Csv\Exception
+     */
+    public function importAll(): ZoneDataDumpImportService
     {
         $this
-            ->importNpcData()
             ->importDoorData()
-            ->importZonePointData()
             ->importGroundSpawnData()
-            ->importObjectData();
+            ->importNpcData()
+            ->importObjectData()
+            ->importZonePointData();
+
+        return $this;
     }
 
     /**
@@ -89,15 +114,7 @@ class ZoneDataDumpImportService
      */
     public function importNpcData()
     {
-        $this->validate();
-
-        /**
-         * Setup reader service
-         */
-        $this->data_dump_reader_service
-            ->setFile($this->getFile())
-            ->initReader()
-            ->parse();
+        $this->validate()->readerParse();
 
         $count = 0;
         foreach ($this->data_dump_reader_service->getCsvData() as $row) {
@@ -169,7 +186,7 @@ class ZoneDataDumpImportService
             $count++;
         }
 
-        dump("Created {$count} NPC's in " . $this->getZoneShortName());
+        $this->setCreatedCount("npc_types", $count);
 
         return $this;
     }
@@ -181,15 +198,7 @@ class ZoneDataDumpImportService
      */
     public function importDoorData()
     {
-        $this->validate();
-
-        /**
-         * Setup reader service
-         */
-        $this->data_dump_reader_service
-            ->setFile($this->getFile())
-            ->initReader()
-            ->parse();
+        $this->validate()->readerParse();
 
         $count = 0;
         foreach ($this->data_dump_reader_service->getCsvData() as $row) {
@@ -225,8 +234,7 @@ class ZoneDataDumpImportService
             $count++;
         }
 
-        dump("Created {$count} doors in " .
-            $this->getZoneShortName() . " version " . $this->getZoneInstanceVersion());
+        $this->setCreatedCount("doors", $count);
 
         return $this;
     }
@@ -238,15 +246,7 @@ class ZoneDataDumpImportService
      */
     public function importZonePointData()
     {
-        $this->validate();
-
-        /**
-         * Setup reader service
-         */
-        $this->data_dump_reader_service
-            ->setFile($this->getFile())
-            ->initReader()
-            ->parse();
+        $this->validate()->readerParse();
 
         $count = 0;
         foreach ($this->data_dump_reader_service->getCsvData() as $row) {
@@ -269,8 +269,7 @@ class ZoneDataDumpImportService
             $count++;
         }
 
-        dump("Created {$count} zonepoints in " .
-            $this->getZoneShortName() . " version " . $this->getZoneInstanceVersion());
+        $this->setCreatedCount("zonepoints", $count);
 
         return $this;
     }
@@ -281,15 +280,7 @@ class ZoneDataDumpImportService
      */
     public function importGroundSpawnData()
     {
-        $this->validate();
-
-        /**
-         * Setup reader service
-         */
-        $this->data_dump_reader_service
-            ->setFile($this->getFile())
-            ->initReader()
-            ->parse();
+        $this->validate()->readerParse();
 
         $zone_id = $this->getZoneIdByShortName($this->getZoneShortName());
         $count   = 0;
@@ -310,8 +301,7 @@ class ZoneDataDumpImportService
             $count++;
         }
 
-        dump("Created {$count} ground_spawns in " .
-            $this->getZoneShortName() . " version " . $this->getZoneInstanceVersion());
+        $this->setCreatedCount("ground_spawns", $count);
 
         return $this;
     }
@@ -322,15 +312,7 @@ class ZoneDataDumpImportService
      */
     public function importObjectData()
     {
-        $this->validate();
-
-        /**
-         * Setup reader service
-         */
-        $this->data_dump_reader_service
-            ->setFile($this->getFile())
-            ->initReader()
-            ->parse();
+        $this->validate()->readerParse();
 
         /**
          * Fetch pre-existing types
@@ -367,8 +349,7 @@ class ZoneDataDumpImportService
             $count++;
         }
 
-        dump("Created {$count} objects in " .
-            $this->getZoneShortName() . " version " . $this->getZoneInstanceVersion());
+        $this->setCreatedCount("objects", $count);
 
         return $this;
     }
@@ -437,5 +418,34 @@ class ZoneDataDumpImportService
     public function getZoneInstanceVersion(): int
     {
         return $this->zone_instance_version;
+    }
+
+    /**
+     * @param string $type
+     * @param int    $count
+     * @return ZoneDataDumpImportService
+     */
+    private function setCreatedCount(string $type, int $count): ZoneDataDumpImportService
+    {
+        $this->created_count[$type] = $count;
+
+        return $this;
+    }
+
+    /**
+     * @param string $type
+     * @return array
+     */
+    public function getCreatedCount(string $type): array
+    {
+        return array_get($this->created_count, $type, []);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCreated(): array
+    {
+        return $this->created_count;
     }
 }

@@ -127,5 +127,9 @@ class ZoneDataDumpImport extends Command
                 $zone_data_dump_import_service->importAll();
                 break;
         }
+
+        foreach ($zone_data_dump_import_service->getCreated() as $created_type => $count) {
+            $this->info("Created ({$count}) {$created_type}");
+        }
     }
 }
