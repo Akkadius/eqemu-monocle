@@ -49,6 +49,7 @@ class ZoneDataDeleteService
             ->deleteDoorData()
             ->deleteObjectData()
             ->deleteGroundSpawnData()
+            ->deleteZoneHeaderData()
             ->deleteZonePointData();
     }
 
@@ -164,7 +165,6 @@ class ZoneDataDeleteService
         return $this;
     }
 
-
     /**
      * @return $this
      * @throws \Exception
@@ -179,6 +179,24 @@ class ZoneDataDeleteService
         )->delete();
 
         $this->info("Deleted 'objects' (" . $deleted_count . ")...");
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws \Exception
+     */
+    public function deleteZoneHeaderData()
+    {
+        $deleted_count = Zone::where(
+            [
+                'zoneidnumber' => $this->getZoneIdByShortName($this->getZoneShortName()),
+                'version'      => $this->getZoneInstanceVersion()
+            ]
+        )->delete();
+
+        $this->info("Deleted 'zone' (" . $deleted_count . ")...");
 
         return $this;
     }

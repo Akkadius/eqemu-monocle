@@ -105,6 +105,7 @@ class ZoneDataDumpImportService
             ->importGroundSpawnData()
             ->importNpcData()
             ->importObjectData()
+            ->importZoneHeaderData()
             ->importZonePointData();
 
         return $this;
@@ -388,6 +389,113 @@ class ZoneDataDumpImportService
         }
 
         $this->setCreatedCount("objects", $count);
+
+        return $this;
+    }
+
+    /**
+     * @param string $argb_int
+     * @return array|null
+     */
+    private function argbIntToRgb(string $argb_int): ?array
+    {
+        $rgb['alpha'] = $argb_int >> 24 & 255;
+        $rgb['red']   = $argb_int >> 16 & 255;
+        $rgb['green'] = $argb_int >> 8 & 255;
+        $rgb['blue']  = $argb_int & 255;
+
+        return $rgb;
+    }
+
+    /**
+     * @throws \League\Csv\Exception
+     * @throws Exception
+     */
+    public function importZoneHeaderData()
+    {
+        $this->validate()->readerParse();
+
+        $count = 0;
+        foreach ($this->data_dump_reader_service->getCsvData() as $row) {
+
+            /**
+             * Calculate and split out ARGB values...
+             */
+            $fog_red   = array_get($row, 'fog_red');
+            $fog_blue  = array_get($row, 'fog_blue');
+            $fog_green = array_get($row, 'fog_green');
+            $fog_red   = array_get($this->argbIntToRgb($fog_red), 'red', '');
+            $fog_blue  = array_get($this->argbIntToRgb($fog_blue), 'blue', '');
+            $fog_green = array_get($this->argbIntToRgb($fog_green), 'green', '');
+
+            /**
+             * Fill in zone model
+             */
+            $zone                 = new Zone;
+            $zone->short_name     = array_get($row, 'short_name');
+            $zone->long_name      = array_get($row, 'long_name');
+            $zone->zoneidnumber   = array_get($row, 'zone_id');
+            $zone->version        = $this->getZoneInstanceVersion();
+            $zone->minclip        = array_get($row, 'min_clip');
+            $zone->maxclip        = array_get($row, 'max_clip');
+            $zone->fog_red        = $fog_red;
+            $zone->fog_blue       = $fog_blue;
+            $zone->fog_green      = $fog_green;
+            $zone->fog_minclip    = array_get($row, 'fog_start0');
+            $zone->fog_density    = array_get($row, 'fog_density');
+            $zone->gravity        = array_get($row, 'zone_gravity');
+            $zone->rain_chance1   = array_get($row, 'rain_chance0');
+            $zone->rain_chance2   = array_get($row, 'rain_chance1');
+            $zone->rain_chance3   = array_get($row, 'rain_chance2');
+            $zone->rain_chance4   = array_get($row, 'rain_chance3');
+            $zone->rain_duration1 = array_get($row, 'rain_duration0');
+            $zone->rain_duration2 = array_get($row, 'rain_duration1');
+            $zone->rain_duration3 = array_get($row, 'rain_duration2');
+            $zone->rain_duration4 = array_get($row, 'rain_duration3');
+            $zone->snow_chance1   = array_get($row, 'snow_chance0');
+            $zone->snow_chance2   = array_get($row, 'snow_chance1');
+            $zone->snow_chance3   = array_get($row, 'snow_chance2');
+            $zone->snow_chance4   = array_get($row, 'snow_chance3');
+            $zone->snow_duration1 = array_get($row, 'snow_duration0');
+            $zone->snow_duration2 = array_get($row, 'snow_duration1');
+            $zone->snow_duration3 = array_get($row, 'snow_duration2');
+            $zone->snow_duration4 = array_get($row, 'snow_duration3');
+            $zone->safe_x         = array_get($row, 'safe_x_loc');
+            $zone->safe_y         = array_get($row, 'safe_y_loc');
+            $zone->safe_z         = array_get($row, 'safe_z_loc');
+            $zone->sky            = array_get($row, 'sky_type');
+            $zone->underworld     = array_get($row, 'floor');
+            $zone->ztype          = array_get($row, 'out_door');
+
+            /**
+             * TODO: Implement safe heading
+             * Not using 'ceiling' value to counter 'floor'
+             * $zone->safe_heading = array_get($row, 'safe_heading');
+             */
+
+            /**
+             * Can levitate
+             */
+            $no_levitate       = array_get($row, 'b_no_levitate', true);
+            $zone->canlevitate = ($no_levitate ? 0 : 1);
+
+            /**
+             * Buff Expiration
+             */
+            $no_buff_expiration = array_get($row, 'b_no_buff_expiration', true);
+            $zone->suspendbuffs = ($no_buff_expiration ? 1 : 0);
+
+            /**
+                $zone->fast_regen_hp        = array_get($row, 'fast_regen_hp');
+                $zone->fast_regen_mana      = array_get($row, 'fast_regen_mana');
+                $zone->fast_regen_endurance = array_get($row, 'fast_regen_endurance');
+                $zone->npc_max_aggro_dist   = array_get($row, 'npc_agro_max_dist');
+             */
+
+            $count++;
+        }
+
+        $this->setCreatedCount("zone", $count);
 
         return $this;
     }

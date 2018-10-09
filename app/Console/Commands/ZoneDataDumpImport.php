@@ -86,7 +86,8 @@ class ZoneDataDumpImport extends Command
                 "door",
                 "grounditem",
                 "objects",
-                "zonepoint"
+                "zonepoint",
+                "zone"
             ];
         }
 
@@ -145,6 +146,9 @@ class ZoneDataDumpImport extends Command
                     break;
                 case "zonepoint":
                     $zone_data_dump_import_service->importZonePointData();
+                    break;
+                case "zone":
+                    $zone_data_dump_import_service->importZoneHeaderData();
                     break;
                 case "all":
                     $zone_data_dump_import_service->importAll();

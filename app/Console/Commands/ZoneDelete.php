@@ -74,6 +74,9 @@ class ZoneDelete extends Command
             case "zonepoint":
                 $zone_data_delete_service->deleteZonePointData();
                 break;
+            case "zone":
+                $zone_data_delete_service->deleteZoneHeaderData();
+                break;
             case "all":
                 $zone_data_delete_service->deleteAll();
                 break;
