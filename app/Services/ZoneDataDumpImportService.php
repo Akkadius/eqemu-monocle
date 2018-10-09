@@ -21,6 +21,9 @@ use Exception;
 
 class ZoneDataDumpImportService
 {
+    const ENTITY_TYPE_PLAYER = 0;
+    const ENTITY_TYPE_CORPSE = 2;
+
     /**
      * @var ZoneDataDumpReaderService
      */
@@ -118,6 +121,30 @@ class ZoneDataDumpImportService
 
         $count = 0;
         foreach ($this->data_dump_reader_service->getCsvData() as $row) {
+
+            $last_name   = array_get($row, 'lastname');
+            $entity_type = array_get($row, 'type');
+
+            if (strpos($last_name, "'s Mercenary") !== false) {
+                continue;
+            }
+
+            if (strpos($last_name, "'s Pet") !== false) {
+                continue;
+            }
+
+            if (strpos($last_name, "`s Mount") !== false) {
+                continue;
+            }
+
+            if ($entity_type == self::ENTITY_TYPE_CORPSE) {
+                continue;
+            }
+
+            if ($entity_type == self::ENTITY_TYPE_PLAYER) {
+                continue;
+            }
+
 
             /**
              * Create NPC
