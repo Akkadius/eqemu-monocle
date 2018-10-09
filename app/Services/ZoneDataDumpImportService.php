@@ -146,7 +146,6 @@ class ZoneDataDumpImportService
                 continue;
             }
 
-
             /**
              * Create NPC
              */
@@ -169,7 +168,9 @@ class ZoneDataDumpImportService
             $npc->name              = array_get($row, 'name');
             $npc->race              = array_get($row, 'm_actor_client_race');
             $npc->size              = array_get($row, 'height');
-            $npc->texture           = array_get($row, 'm_actor_client_texture_type');
+            $npc->texture           = array_get($row, 'equipment_chestid');
+            $npc->d_melee_texture1  = array_get($row, 'equipment_primaryid');
+            $npc->d_melee_texture2  = array_get($row, 'equipment_offhandid');
 
             /**
              * See invis
