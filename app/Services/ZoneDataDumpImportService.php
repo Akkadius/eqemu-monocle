@@ -424,9 +424,9 @@ class ZoneDataDumpImportService
             $fog_red   = array_get($row, 'fog_red');
             $fog_blue  = array_get($row, 'fog_blue');
             $fog_green = array_get($row, 'fog_green');
-            $fog_red   = array_get($this->argbIntToRgb($fog_red), 'red', '');
-            $fog_blue  = array_get($this->argbIntToRgb($fog_blue), 'blue', '');
-            $fog_green = array_get($this->argbIntToRgb($fog_green), 'green', '');
+            $fog_red   = array_get($this->argbIntToRgb($fog_red), 'red', 0);
+            $fog_blue  = array_get($this->argbIntToRgb($fog_blue), 'blue', 0);
+            $fog_green = array_get($this->argbIntToRgb($fog_green), 'green', 0);
 
             /**
              * Fill in zone model
