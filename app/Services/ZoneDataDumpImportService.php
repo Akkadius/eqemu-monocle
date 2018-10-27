@@ -196,6 +196,11 @@ class ZoneDataDumpImportService
             $npc->PhR    = 0;
 
             /**
+             * Misc
+             */
+            $npc->attack_delay = 0;
+
+            /**
              * Targetable
              */
             $target_able       = array_get($row, 'targetable', false);
@@ -513,6 +518,8 @@ class ZoneDataDumpImportService
                 $zone->fast_regen_endurance = array_get($row, 'fast_regen_endurance');
                 $zone->npc_max_aggro_dist   = array_get($row, 'npc_agro_max_dist');
              */
+
+            $zone->save();
 
             $count++;
         }
