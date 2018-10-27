@@ -82,12 +82,12 @@ class ZoneDataDumpImport extends Command
 
         if ($dump_type == "all") {
             $imports_to_run = [
+                "zone",
                 "npc",
                 "door",
                 "grounditem",
                 "objects",
-                "zonepoint",
-                "zone"
+                "zonepoint"
             ];
         }
 

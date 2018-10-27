@@ -174,6 +174,28 @@ class ZoneDataDumpImportService
             $npc->d_melee_texture2  = array_get($row, 'equipment_offhandid');
 
             /**
+             * Stats
+             */
+            $npc->STA  = 0;
+            $npc->STR  = 0;
+            $npc->DEX  = 0;
+            $npc->AGI  = 0;
+            $npc->_INT = 0;
+            $npc->WIS  = 0;
+            $npc->CHA  = 0;
+
+            /**
+             * Resists
+             */
+            $npc->MR     = 0;
+            $npc->CR     = 0;
+            $npc->FR     = 0;
+            $npc->DR     = 0;
+            $npc->PR     = 0;
+            $npc->Corrup = 0;
+            $npc->PhR    = 0;
+
+            /**
              * Targetable
              */
             $target_able       = array_get($row, 'targetable', false);
