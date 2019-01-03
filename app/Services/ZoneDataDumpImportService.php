@@ -199,6 +199,7 @@ class ZoneDataDumpImportService
              * Misc
              */
             $npc->attack_delay = 0;
+            $npc->runspeed     = 1.325;
 
             /**
              * Targetable
@@ -487,8 +488,12 @@ class ZoneDataDumpImportService
             $zone->snow_duration2 = array_get($row, 'snow_duration1');
             $zone->snow_duration3 = array_get($row, 'snow_duration2');
             $zone->snow_duration4 = array_get($row, 'snow_duration3');
-            $zone->safe_x         = array_get($row, 'safe_x_loc');
-            $zone->safe_y         = array_get($row, 'safe_y_loc');
+
+            /**
+             * Yes - these are flipped
+             */
+            $zone->safe_x         = array_get($row, 'safe_y_loc');
+            $zone->safe_y         = array_get($row, 'safe_x_loc');
             $zone->safe_z         = array_get($row, 'safe_z_loc');
             $zone->sky            = array_get($row, 'sky_type');
             $zone->underworld     = array_get($row, 'floor');
