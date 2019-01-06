@@ -222,7 +222,17 @@ class ZoneDataDumpImportService
             $npc->see_invis = ($see_invis ? 1 : 0);
 
             /**
-             * Save
+             * Set proper invisible NPC attributes
+             */
+            if ($npc->race == 127 || $npc->race == 240) {
+                $npc->bodytype          = 11;
+                $npc->trackable         = 0;
+                $npc->findable          = 0;
+                $npc->special_abilities = '24,35';
+            }
+
+            /**
+             * Save NPC
              */
             $npc->save();
 
