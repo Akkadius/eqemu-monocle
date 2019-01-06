@@ -17,6 +17,7 @@ use App\Models\SpawnEntry;
 use App\Models\SpawnGroup;
 use App\Models\Zone;
 use App\Models\ZonePoint;
+use DB;
 use Exception;
 
 class ZoneDataDumpImportService
@@ -156,6 +157,7 @@ class ZoneDataDumpImportService
              * Create NPC
              */
             $npc                    = new NpcTypes;
+            $npc->id                = $this->getNpcIdFromZoneContext();
             $npc->bodytype          = array_get($row, 'body_type');
             $npc->class             = array_get($row, 'get_class');
             $npc->drakkin_details   = array_get($row, 'm_actor_client_details');
@@ -642,5 +644,42 @@ class ZoneDataDumpImportService
     public function getCreated(): array
     {
         return $this->created_count;
+    }
+
+    /**
+     * @return int|null
+     * @throws Exception
+     */
+    private function getNpcIdFromZoneContext(): ?int
+    {
+        $zone_id = $this->getZoneIdByShortName($this->getZoneShortName());
+
+        /**
+         * Zone contextual min / max ID ranges
+         */
+        $npc_types_range_min = ($zone_id * 1000);
+        $npc_types_range_max = (($zone_id + 1) * 1000);
+
+        /**
+         * Fetch highest rom range in DB
+         */
+        $next_id_to_use = DB::table('npc_types')
+            ->selectRaw('id + 1 as next_id')
+            ->where(
+                [
+                    ['id', '>', $npc_types_range_min],
+                    ['id', '<', $npc_types_range_max]
+                ]
+            )
+            ->orderBy('id', 'desc')
+            ->limit(1)
+            ->first()
+            ->next_id;
+
+        if ($next_id_to_use > $npc_types_range_max) {
+            throw new \Exception("Cannot use ID of $next_id_to_use since our current max is $npc_types_range_max");
+        }
+
+        return $next_id_to_use;
     }
 }
