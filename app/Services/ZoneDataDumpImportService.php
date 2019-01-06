@@ -366,7 +366,7 @@ class ZoneDataDumpImportService
     {
         $this->validate()->readerParse();
 
-        $zone_id = $this->getZoneIdByShortName($this->getZoneShortName());
+        $zone_id = Zone::getZoneIdByShortName($this->getZoneShortName());
         $count   = 0;
         foreach ($this->data_dump_reader_service->getCsvData() as $row) {
             $ground_spawn          = new GroundSpawn;
@@ -412,7 +412,7 @@ class ZoneDataDumpImportService
             $object_types[$type->objectname]['icon'] = $type->icon;
         }
 
-        $zone_id = $this->getZoneIdByShortName($this->getZoneShortName());
+        $zone_id = Zone::getZoneIdByShortName($this->getZoneShortName());
         $count   = 0;
         foreach ($this->data_dump_reader_service->getCsvData() as $row) {
             $object             = new GameObject;
@@ -552,15 +552,6 @@ class ZoneDataDumpImportService
     }
 
     /**
-     * @param string $zone_short_name
-     * @return int|null
-     */
-    public function getZoneIdByShortName(string $zone_short_name): ?int
-    {
-        return Zone::where('short_name', $zone_short_name)->first()->zoneidnumber;
-    }
-
-    /**
      * @return string
      */
     public function getFile(): string
@@ -652,7 +643,7 @@ class ZoneDataDumpImportService
      */
     private function getNpcIdFromZoneContext(): ?int
     {
-        $zone_id = $this->getZoneIdByShortName($this->getZoneShortName());
+        $zone_id = Zone::getZoneIdByShortName($this->getZoneShortName());
 
         /**
          * Zone contextual min / max ID ranges

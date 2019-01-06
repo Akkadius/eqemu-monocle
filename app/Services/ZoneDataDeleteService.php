@@ -107,7 +107,7 @@ class ZoneDataDeleteService
         NpcTypes::whereIn('id', $npc_type_ids)->delete();
 
         $this->info("Deleted 'npc_types' (" . count($npc_type_ids) . ")...");
-        
+
         return $this;
     }
 
@@ -155,7 +155,7 @@ class ZoneDataDeleteService
     {
         $deleted_count = GroundSpawn::where(
             [
-                'zoneid'  => $this->getZoneIdByShortName($this->getZoneShortName()),
+                'zoneid'  => Zone::getZoneIdByShortName($this->getZoneShortName()),
                 'version' => $this->getZoneInstanceVersion()
             ]
         )->delete();
@@ -173,7 +173,7 @@ class ZoneDataDeleteService
     {
         $deleted_count = GameObject::where(
             [
-                'zoneid'  => $this->getZoneIdByShortName($this->getZoneShortName()),
+                'zoneid'  => Zone::getZoneIdByShortName($this->getZoneShortName()),
                 'version' => $this->getZoneInstanceVersion()
             ]
         )->delete();
@@ -191,7 +191,7 @@ class ZoneDataDeleteService
     {
         $deleted_count = Zone::where(
             [
-                'zoneidnumber' => $this->getZoneIdByShortName($this->getZoneShortName()),
+                'zoneidnumber' => Zone::getZoneIdByShortName($this->getZoneShortName()),
                 'version'      => $this->getZoneInstanceVersion()
             ]
         )->delete();
@@ -199,15 +199,6 @@ class ZoneDataDeleteService
         $this->info("Deleted 'zone' (" . $deleted_count . ")...");
 
         return $this;
-    }
-
-    /**
-     * @param string $zone_short_name
-     * @return int|null
-     */
-    public function getZoneIdByShortName(string $zone_short_name): ?int
-    {
-        return Zone::where('short_name', $zone_short_name)->first()->zoneidnumber;
     }
 
     /**
