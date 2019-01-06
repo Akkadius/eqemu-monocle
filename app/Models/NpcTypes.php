@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\SpawnEntry[] $spawnentries
  */
 class NpcTypes extends Model
 {

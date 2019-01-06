@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models
  * @mixin \Eloquent
+ * @property-read \App\Models\SpawnGroup $spawngroup
  */
 class SpawnEntry extends Model
 {
