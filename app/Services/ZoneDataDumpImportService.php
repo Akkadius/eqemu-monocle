@@ -661,7 +661,7 @@ class ZoneDataDumpImportService
         $npc_types_range_max = (($zone_id + 1) * 1000);
 
         /**
-         * Fetch highest rom range in DB
+         * Fetch highest from range in DB
          */
         $next_id_to_use = DB::table('npc_types')
             ->selectRaw('id + 1 as next_id')
