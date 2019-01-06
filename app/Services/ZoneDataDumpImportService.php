@@ -150,7 +150,7 @@ class ZoneDataDumpImportService
             /**
              * Strip numbers from name
              */
-            $displayed_name = preg_replace('/\d/', '', $displayed_name);
+            $npc_name = preg_replace('/\d/', '', array_get($row, 'name'));
 
             /**
              * Create NPC
@@ -171,7 +171,7 @@ class ZoneDataDumpImportService
             $npc->luclin_eyecolor2  = array_get($row, 'm_actor_client_eye_color2');
             $npc->luclin_haircolor  = array_get($row, 'm_actor_client_hair_color');
             $npc->luclin_hairstyle  = array_get($row, 'm_actor_client_hair_style');
-            $npc->name              = array_get($row, 'name');
+            $npc->name              = $npc_name;
             $npc->race              = array_get($row, 'm_actor_client_race');
             $npc->size              = array_get($row, 'height');
             $npc->texture           = array_get($row, 'equipment_chestid');
