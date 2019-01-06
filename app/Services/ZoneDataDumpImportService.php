@@ -148,6 +148,11 @@ class ZoneDataDumpImportService
             }
 
             /**
+             * Strip numbers from name
+             */
+            $displayed_name = preg_replace('/\d/', '', $displayed_name);
+
+            /**
              * Create NPC
              */
             $npc                    = new NpcTypes;
