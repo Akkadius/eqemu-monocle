@@ -24,7 +24,7 @@ class ZoneNpcPeqRenumber extends Command
      *
      * @var string
      */
-    protected $description = 'Handles renumbering NPC data that does not fall within PEQ convention';
+    protected $description = 'Handles renumbering NPC data that that are outside PEQ ID convention';
 
     /**
      * @var int
