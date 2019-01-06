@@ -507,12 +507,12 @@ class ZoneDataDumpImportService
             /**
              * Yes - these are flipped
              */
-            $zone->safe_x         = array_get($row, 'safe_y_loc');
-            $zone->safe_y         = array_get($row, 'safe_x_loc');
-            $zone->safe_z         = array_get($row, 'safe_z_loc');
-            $zone->sky            = array_get($row, 'sky_type');
-            $zone->underworld     = array_get($row, 'floor');
-            $zone->ztype          = array_get($row, 'out_door');
+            $zone->safe_x     = array_get($row, 'safe_y_loc');
+            $zone->safe_y     = array_get($row, 'safe_x_loc');
+            $zone->safe_z     = array_get($row, 'safe_z_loc');
+            $zone->sky        = array_get($row, 'sky_type');
+            $zone->underworld = array_get($row, 'floor');
+            $zone->ztype      = array_get($row, 'out_door');
 
             /**
              * TODO: Implement safe heading
@@ -533,10 +533,10 @@ class ZoneDataDumpImportService
             $zone->suspendbuffs = ($no_buff_expiration ? 1 : 0);
 
             /**
-                $zone->fast_regen_hp        = array_get($row, 'fast_regen_hp');
-                $zone->fast_regen_mana      = array_get($row, 'fast_regen_mana');
-                $zone->fast_regen_endurance = array_get($row, 'fast_regen_endurance');
-                $zone->npc_max_aggro_dist   = array_get($row, 'npc_agro_max_dist');
+             * $zone->fast_regen_hp        = array_get($row, 'fast_regen_hp');
+             * $zone->fast_regen_mana      = array_get($row, 'fast_regen_mana');
+             * $zone->fast_regen_endurance = array_get($row, 'fast_regen_endurance');
+             * $zone->npc_max_aggro_dist   = array_get($row, 'npc_agro_max_dist');
              */
 
             $zone->save();
