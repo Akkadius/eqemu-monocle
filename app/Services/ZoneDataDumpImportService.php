@@ -19,6 +19,7 @@ use App\Models\Zone;
 use App\Models\ZonePoint;
 use DB;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 
 class ZoneDataDumpImportService
 {
@@ -121,7 +122,25 @@ class ZoneDataDumpImportService
     {
         $this->validate()->readerParse();
 
-        $count = 0;
+        /**
+         * Keep track of created NPCs for collapse logic
+         */
+        $created_npc_entities = Collection::make();
+
+        /**
+         * Keep track of npc levels by name
+         */
+        $npc_level_data = [];
+
+        /**
+         * Count spawn entries for spawn name increment
+         */
+        $entry_create_count = 0;
+
+        /**
+         * Keep track of actual NPC entries created separately per collapse
+         */
+        $npc_created_count = 0;
         foreach ($this->data_dump_reader_service->getCsvData() as $row) {
 
             $last_name      = array_get($row, 'lastname');
@@ -234,15 +253,59 @@ class ZoneDataDumpImportService
             }
 
             /**
-             * Save NPC
+             * Add to level data bucket
              */
-            $npc->save();
+            $npc_level_data[$npc_name][] = $npc->level;
+
+            /**
+             * NPC collapse / compare attribute logic
+             */
+            $found_previous_matching_entity = false;
+            foreach ($created_npc_entities as $entity) {
+
+                /**
+                 * @var $created_npc_entity_temp Collection
+                 */
+                $created_npc_entity_temp      = clone $entity;
+                $just_created_npc_entity_temp = clone $npc;
+
+                /**
+                 * Unset ID so we can compare the rest of the attributes
+                 */
+                unset($created_npc_entity_temp->id);
+                unset($just_created_npc_entity_temp->id);
+
+                /**
+                 * Remove level
+                 */
+                unset($created_npc_entity_temp->level);
+                unset($just_created_npc_entity_temp->level);
+
+                /**
+                 * If a previously created entity matches attributes of that of the one we
+                 * are trying to build just now, lets us it and its ID
+                 */
+                if ($created_npc_entity_temp->toArray() == $just_created_npc_entity_temp->toArray()) {
+                    $found_previous_matching_entity = true;
+                    $npc                            = $entity;
+                    // echo "{$just_created_npc_entity_temp->name} is the same as {$created_npc_entity_temp->name}\n";
+                }
+            }
+
+            /**
+             * Save NPC and save a local copy for NPC collapse logic
+             */
+            if (!$found_previous_matching_entity) {
+                $npc->save();
+                $created_npc_entities->push($npc);
+                $npc_created_count++;
+            }
 
             /**
              * Create Spawn Group
              */
             $spawn_group       = new SpawnGroup;
-            $spawn_group->name = $this->getZoneShortName() . "_monocle_" . $count;
+            $spawn_group->name = $this->getZoneShortName() . "_monocle_" . $entry_create_count;
             $spawn_group->save();
 
             /**
@@ -267,10 +330,52 @@ class ZoneDataDumpImportService
             $spawn2->heading      = array_get($row, 'heading');
             $spawn2->save();
 
-            $count++;
+            $entry_create_count++;
         }
 
-        $this->setCreatedCount("npc_types", $count);
+        $this->setCreatedCount("npc_types", $npc_created_count);
+
+        /**
+         * Min / Max Level logic
+         *
+         * Fetch complete NPC list in zone to make sure we don't
+         * update outside of context
+         */
+        $zone_npcs_map = [];
+
+        $zone_npcs = DB::table('npc_types')
+            ->select('npc_types.*')
+            ->join('spawnentry', 'npc_types.id', '=', 'spawnentry.npcID')
+            ->join('spawn2', 'spawnentry.spawngroupID', '=', 'spawn2.spawngroupID')
+            ->where('spawn2.zone', $this->getZoneShortName())
+            ->where('spawn2.version', $this->getZoneInstanceVersion())
+            ->distinct()
+            ->get();
+
+        foreach ($zone_npcs as $npc) {
+            $zone_npcs_map[$npc->name][] = $npc->id;
+        }
+
+        /**
+         * Loop through level data
+         */
+        foreach ($npc_level_data as $npc_name => $val) {
+            $npc_level_data[$npc_name] = array_unique($val);
+            $npc_level_min             = min($val);
+            $npc_level_max             = max($val);
+
+            /**
+             * Update NPC record
+             */
+            if ($zone_npcs_map[$npc_name]) {
+                foreach ($zone_npcs_map[$npc_name] as $npc_id) {
+                    $npc_to_update           = NpcTypes::find($npc_id);
+                    $npc_to_update->level    = $npc_level_min;
+                    $npc_to_update->maxlevel = $npc_level_max;
+                    $npc_to_update->save();
+                }
+            }
+        }
 
         return $this;
     }

@@ -28,6 +28,8 @@ class Zone extends Model
      */
     public static function getZoneIdByShortName(string $zone_short_name): ?int
     {
-        return Zone::where('short_name', $zone_short_name)->first()->zoneidnumber;
+        return Zone::where('short_name', $zone_short_name)
+            ->first()
+            ->zoneidnumber;
     }
 }
