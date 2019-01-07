@@ -334,6 +334,7 @@ class ZoneDataDumpImportService
         }
 
         $this->setCreatedCount("npc_types", $npc_created_count);
+        $this->setCreatedCount("spawnentry", $entry_create_count);
 
         /**
          * Min / Max Level logic
