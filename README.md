@@ -2,6 +2,12 @@ The purpose of this project is to handle database imports from CSV dumps namely 
 
 # Setup
 
+Clone this repository
+
+```
+git clone https://github.com/Akkadius/eqemu-monocle.git
+```
+
 In monocle folder
 
 `cp .env.example .env`
