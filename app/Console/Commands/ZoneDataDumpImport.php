@@ -93,8 +93,8 @@ class ZoneDataDumpImport extends Command
 
         foreach ($imports_to_run as $import_type) {
 
-            foreach ($files as $file) {
-                $file                      = strtolower($file);
+            foreach ($files as $file_raw) {
+                $file                      = strtolower($file_raw);
                 $file_clean                = str_replace(".csv", "", $file);
                 $file_parameters           = explode("_", $file_clean);
                 $zone_short_name_parameter = array_get($file_parameters, 0, '');
@@ -142,7 +142,7 @@ class ZoneDataDumpImport extends Command
              * Process import
              */
             $zone_data_dump_import_service
-                ->setFile($file)
+                ->setFile($file_raw)
                 ->setZoneShortName($zone_short_name)
                 ->setZoneInstanceVersion($zone_instance_version);
 
