@@ -305,7 +305,13 @@ class ZoneDataDumpImportService
              * Create Spawn Group
              */
             $spawn_group       = new SpawnGroup;
-            $spawn_group->name = $this->getZoneShortName() . "_monocle_" . $entry_create_count;
+            $spawn_group->name = sprintf(
+                "%s_monocle_%s_%s",
+                $this->getZoneShortName(),
+                $this->getZoneInstanceVersion(),
+                $entry_create_count
+            );
+
             $spawn_group->save();
 
             /**
@@ -583,7 +589,7 @@ class ZoneDataDumpImportService
              * Fill in zone model
              */
             $zone                 = new Zone;
-            $zone->short_name     = array_get($row, 'short_name');
+            $zone->short_name     = $this->getZoneShortName();
             $zone->long_name      = array_get($row, 'long_name');
             $zone->zoneidnumber   = array_get($row, 'zone_id');
             $zone->version        = $this->getZoneInstanceVersion();
@@ -646,6 +652,14 @@ class ZoneDataDumpImportService
              * $zone->fast_regen_endurance = array_get($row, 'fast_regen_endurance');
              * $zone->npc_max_aggro_dist   = array_get($row, 'npc_agro_max_dist');
              */
+
+            $zone_id_number = Zone::where('short_name', $this->getZoneShortName())
+                                  ->pluck('zoneidnumber')
+                                  ->first();
+
+            if ($zone_id_number) {
+                $zone->zoneidnumber = $zone_id_number;
+            }
 
             $zone->save();
 

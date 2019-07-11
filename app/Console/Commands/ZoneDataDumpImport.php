@@ -98,8 +98,23 @@ class ZoneDataDumpImport extends Command
                 $file_clean                = str_replace(".csv", "", $file);
                 $file_parameters           = explode("_", $file_clean);
                 $zone_short_name_parameter = array_get($file_parameters, 0, '');
-                $dump_type_parameter       = array_get($file_parameters, 1, '');
-                $time_stamp_parameter      = array_get($file_parameters, 2, '');
+
+                /**
+                 * Some of our imports set the type not exactly in the same position, so lets dynamically find it in
+                 * the filename
+                 *
+                 * Example: thundercrest_70_Door_2019-03-30-18-54-52.csv
+                 */
+                $dump_type_index = 0;
+                foreach ($file_parameters as $file_parameter) {
+                    if ($file_parameter == $import_type) {
+                        break;
+                    }
+                    $dump_type_index++;
+                }
+
+                $dump_type_parameter       = array_get($file_parameters, $dump_type_index, '');
+                $time_stamp_parameter      = array_get($file_parameters, $dump_type_index + 1, '');
 
                 if ($zone_short_name == $zone_short_name_parameter && $import_type == $dump_type_parameter) {
                     if ($skip_confirmation) {
