@@ -53,6 +53,7 @@ class ZoneDataDumpImportService
 
     /**
      * DataDumpImportService constructor.
+     *
      * @param ZoneDataDumpReaderService $data_dump_reader_service
      */
     public function __construct(ZoneDataDumpReaderService $data_dump_reader_service)
@@ -62,6 +63,7 @@ class ZoneDataDumpImportService
 
     /**
      * Validate required parameters before execute
+     *
      * @return ZoneDataDumpImportService
      * @throws Exception
      */
@@ -354,13 +356,13 @@ class ZoneDataDumpImportService
         $zone_npcs_map = [];
 
         $zone_npcs = DB::table('npc_types')
-            ->select('npc_types.*')
-            ->join('spawnentry', 'npc_types.id', '=', 'spawnentry.npcID')
-            ->join('spawn2', 'spawnentry.spawngroupID', '=', 'spawn2.spawngroupID')
-            ->where('spawn2.zone', $this->getZoneShortName())
-            ->where('spawn2.version', $this->getZoneInstanceVersion())
-            ->distinct()
-            ->get();
+                       ->select('npc_types.*')
+                       ->join('spawnentry', 'npc_types.id', '=', 'spawnentry.npcID')
+                       ->join('spawn2', 'spawnentry.spawngroupID', '=', 'spawn2.spawngroupID')
+                       ->where('spawn2.zone', $this->getZoneShortName())
+                       ->where('spawn2.version', $this->getZoneInstanceVersion())
+                       ->distinct()
+                       ->get();
 
         foreach ($zone_npcs as $npc) {
             $zone_npcs_map[$npc->name][] = $npc->id;
@@ -517,9 +519,9 @@ class ZoneDataDumpImportService
          * Fetch pre-existing types
          */
         $pre_existing_types = GameObject::distinct()
-            ->get(['objectname', 'type', 'icon'])
-            ->where('type', '<', 255)
-            ->where('icon', '>', 0);
+                                        ->get(['objectname', 'type', 'icon'])
+                                        ->where('type', '<', 255)
+                                        ->where('icon', '>', 0);
 
         $object_types = [];
         foreach ($pre_existing_types as $type) {
@@ -555,6 +557,7 @@ class ZoneDataDumpImportService
 
     /**
      * @param string $argb_int
+     *
      * @return array|null
      */
     private function argbIntToRgb(string $argb_int): ?array
@@ -646,15 +649,12 @@ class ZoneDataDumpImportService
             /**
              * Buff Expiration
              */
-            $no_buff_expiration = array_get($row, 'b_no_buff_expiration', true);
-            $zone->suspendbuffs = ($no_buff_expiration ? 1 : 0);
-
-            /**
-             * $zone->fast_regen_hp        = array_get($row, 'fast_regen_hp');
-             * $zone->fast_regen_mana      = array_get($row, 'fast_regen_mana');
-             * $zone->fast_regen_endurance = array_get($row, 'fast_regen_endurance');
-             * $zone->npc_max_aggro_dist   = array_get($row, 'npc_agro_max_dist');
-             */
+            $no_buff_expiration         = array_get($row, 'b_no_buff_expiration', true);
+            $zone->suspendbuffs         = ($no_buff_expiration ? 1 : 0);
+            $zone->fast_regen_hp        = array_get($row, 'fast_regen_hp');
+            $zone->fast_regen_mana      = array_get($row, 'fast_regen_mana');
+            $zone->fast_regen_endurance = array_get($row, 'fast_regen_endurance');
+            $zone->npc_max_aggro_dist   = array_get($row, 'npc_agro_max_dist');
 
             $zone_id_number = Zone::where('short_name', $this->getZoneShortName())
                                   ->pluck('zoneidnumber')
@@ -684,6 +684,7 @@ class ZoneDataDumpImportService
 
     /**
      * @param string $file
+     *
      * @return ZoneDataDumpImportService
      */
     public function setFile(string $file): ZoneDataDumpImportService
@@ -703,6 +704,7 @@ class ZoneDataDumpImportService
 
     /**
      * @param string $zone_short_name
+     *
      * @return ZoneDataDumpImportService
      */
     public function setZoneShortName(string $zone_short_name): ZoneDataDumpImportService
@@ -714,6 +716,7 @@ class ZoneDataDumpImportService
 
     /**
      * @param int $zone_instance_version
+     *
      * @return ZoneDataDumpImportService
      */
     public function setZoneInstanceVersion(int $zone_instance_version): ZoneDataDumpImportService
@@ -734,6 +737,7 @@ class ZoneDataDumpImportService
     /**
      * @param string $type
      * @param int    $count
+     *
      * @return ZoneDataDumpImportService
      */
     private function setCreatedCount(string $type, int $count): ZoneDataDumpImportService
@@ -745,6 +749,7 @@ class ZoneDataDumpImportService
 
     /**
      * @param string $type
+     *
      * @return array
      */
     public function getCreatedCount(string $type): array
@@ -778,16 +783,16 @@ class ZoneDataDumpImportService
          * Fetch highest from range in DB
          */
         $next_id_to_use = DB::table('npc_types')
-            ->selectRaw('id + 1 as next_id')
-            ->where(
-                [
-                    ['id', '>', $npc_types_range_min],
-                    ['id', '<', $npc_types_range_max]
-                ]
-            )
-            ->orderBy('id', 'desc')
-            ->limit(1)
-            ->first()
+                            ->selectRaw('id + 1 as next_id')
+                            ->where(
+                                [
+                                    ['id', '>', $npc_types_range_min],
+                                    ['id', '<', $npc_types_range_max],
+                                ]
+                            )
+                            ->orderBy('id', 'desc')
+                            ->limit(1)
+                            ->first()
             ->next_id;
 
         if ($next_id_to_use > $npc_types_range_max) {
