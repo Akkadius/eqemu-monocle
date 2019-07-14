@@ -92,7 +92,6 @@ class ZoneDataDumpImport extends Command
         }
 
         foreach ($imports_to_run as $import_type) {
-
             foreach ($files as $file_raw) {
                 $file                      = strtolower($file_raw);
                 $file_clean                = str_replace(".csv", "", $file);
@@ -113,8 +112,8 @@ class ZoneDataDumpImport extends Command
                     $dump_type_index++;
                 }
 
-                $dump_type_parameter       = array_get($file_parameters, $dump_type_index, '');
-                $time_stamp_parameter      = array_get($file_parameters, $dump_type_index + 1, '');
+                $dump_type_parameter  = array_get($file_parameters, $dump_type_index, '');
+                $time_stamp_parameter = array_get($file_parameters, $dump_type_index + 1, '');
 
                 if ($zone_short_name == $zone_short_name_parameter && $import_type == $dump_type_parameter) {
                     if ($skip_confirmation) {
@@ -123,8 +122,8 @@ class ZoneDataDumpImport extends Command
                         break;
                     }
 
-                    if ($this->confirm("Use this file? {$file}")) {
-                        $file_to_read   = $file;
+                    if ($this->confirm("Use this file? {$file_raw}")) {
+                        $file_to_read   = $file_raw;
                         $file_timestamp = $time_stamp_parameter;
                         break;
                     }
@@ -136,7 +135,7 @@ class ZoneDataDumpImport extends Command
                 exit;
             }
 
-            $this->info("Reading file '{$file}' time: {$file_timestamp}");
+            $this->info("Reading file '{$file_raw}' time: {$file_timestamp}");
 
             /**
              * Process import
@@ -174,5 +173,7 @@ class ZoneDataDumpImport extends Command
         foreach ($zone_data_dump_import_service->getCreated() as $created_type => $count) {
             $this->info("Created ({$count}) {$created_type}");
         }
+
+        return;
     }
 }
