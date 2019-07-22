@@ -181,7 +181,7 @@ class ZoneDataDumpImportService
             $npc->id                = $this->getNpcIdFromZoneContext();
             $npc->version           = $this->getZoneInstanceVersion();
             $import_body_type       = array_get($row, 'body_type');
-            $npc->bodytype          = ($import_body_type == 0 ? 1 : $import_body_type);
+            $npc->bodytype          = ($import_body_type == 0 ? 23 : $import_body_type);
             $npc->class             = array_get($row, 'get_class');
             $npc->drakkin_details   = array_get($row, 'm_actor_client_details');
             $npc->drakkin_heritage  = array_get($row, 'm_actor_client_heritage');
