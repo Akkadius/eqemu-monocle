@@ -201,7 +201,7 @@ class ZoneDataDumpImportService
             $npc->size              = array_get($row, 'height');
             $npc->texture           = array_get($row, 'm_actor_client_texture_type');
             $npc->light             = array_get($row, 'light');
-            $npc->helmtexture       = array_get($row, 'equipment_head_id');
+            $npc->helmtexture       = array_get($row, 'equipment_head_id', 0);
             $npc->d_melee_texture1  = array_get($row, 'equipment_primaryid');
             $npc->d_melee_texture2  = array_get($row, 'equipment_offhandid');
 
