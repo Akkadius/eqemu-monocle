@@ -583,6 +583,11 @@ class ZoneDataDumpImportService
         foreach ($this->data_dump_reader_service->getCsvData() as $row) {
 
             /**
+             * @var $existing_base_zone \App\Models\Zone
+             */
+            $existing_base_zone = Zone::where('short_name', $this->getZoneShortName())->first();
+
+            /**
              * Calculate and split out ARGB values...
              */
             $fog_red   = array_get($row, 'fog_red');
@@ -657,12 +662,10 @@ class ZoneDataDumpImportService
             $zone->fast_regen_endurance = array_get($row, 'fast_regen_endurance');
             $zone->npc_max_aggro_dist   = array_get($row, 'npc_agro_max_dist');
 
-            $zone_id_number = Zone::where('short_name', $this->getZoneShortName())
-                                  ->pluck('zoneidnumber')
-                                  ->first();
-
-            if ($zone_id_number) {
-                $zone->zoneidnumber = $zone_id_number;
+            if ($existing_base_zone) {
+                $zone->zoneidnumber = $existing_base_zone->zoneidnumber;
+                $zone->expansion    = $existing_base_zone->expansion;
+                $zone->ruleset      = $existing_base_zone->ruleset;
             }
 
             $zone->save();
