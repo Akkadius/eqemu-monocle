@@ -786,18 +786,24 @@ class ZoneDataDumpImportService
         /**
          * Fetch highest from range in DB
          */
-        $next_id_to_use = DB::table('npc_types')
-                            ->selectRaw('id + 1 as next_id')
-                            ->where(
-                                [
-                                    ['id', '>', $npc_types_range_min],
-                                    ['id', '<', $npc_types_range_max],
-                                ]
-                            )
-                            ->orderBy('id', 'desc')
-                            ->limit(1)
-                            ->first()
-            ->next_id;
+        try {
+            $next_id_to_use =
+                DB::table('npc_types')
+                  ->selectRaw('id + 1 as next_id')
+                  ->where(
+                      [
+                          ['id', '>', $npc_types_range_min],
+                          ['id', '<', $npc_types_range_max],
+                      ]
+                  )
+                  ->orderBy('id', 'desc')
+                  ->limit(1)
+                  ->first()->next_id;
+        }
+        catch (\Exception $e) {
+            $next_id_to_use = $npc_types_range_min;
+        }
+
 
         if ($next_id_to_use > $npc_types_range_max) {
             throw new \Exception("Cannot use ID of $next_id_to_use since our current max is $npc_types_range_max");
