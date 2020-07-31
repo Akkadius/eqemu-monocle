@@ -5,11 +5,10 @@ networks:
     driver: bridge
 
 services:
-
-  zoidberg-cli:
+  workspace:
     restart: unless-stopped
     build: ./docker/cli
-    hostname: zoidberg-cli
+    hostname: workspace
     working_dir: /var/www/code
     volumes:
       - ./:/var/www/code
