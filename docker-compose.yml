@@ -1,0 +1,19 @@
+version: '2.4'
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  workspace:
+    restart: unless-stopped
+    image: php:7.4.8-zts-buster
+    hostname: workspace
+    working_dir: /var/www/code
+    volumes:
+      - ./:/var/www/code
+    environment:
+      TZ: ${TZ:-US/Central}
+    tty: true
+    networks:
+      - backend
