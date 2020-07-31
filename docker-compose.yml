@@ -5,10 +5,11 @@ networks:
     driver: bridge
 
 services:
-  workspace:
+
+  zoidberg-cli:
     restart: unless-stopped
-    image: php:7.4.8-zts-buster
-    hostname: workspace
+    build: ./docker/cli
+    hostname: zoidberg-cli
     working_dir: /var/www/code
     volumes:
       - ./:/var/www/code
