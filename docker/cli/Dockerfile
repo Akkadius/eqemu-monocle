@@ -3,6 +3,8 @@ FROM php:7.4.8-zts-buster
 RUN apt-get update && apt-get install -y \
 	vim \
 	wget \
+	zip \
+	unzip \
 	git \
 	&& rm -rf /var/lib/apt/lists/*
 
