@@ -19,7 +19,6 @@ Change your DB variables to point to the appropriate database of your choosing
 From the root monocle folder
 
 ```
-cp env-example .env
 docker-compose up -d workspace
 ```
 
