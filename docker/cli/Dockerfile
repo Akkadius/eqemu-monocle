@@ -85,7 +85,7 @@ RUN chsh -s /bin/bash docker
 #####################################
 RUN mkdir -p /var/www/code/ && chgrp -R www-data /var/www/code \
 	&& chmod 775 /var/www/code && chown docker:docker /var/www/code/
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=1.10.20 --filename=composer
 
 USER docker
 

@@ -19,10 +19,8 @@ Change your DB variables to point to the appropriate database of your choosing
 For this project its easy to just pull in laradock because its easy to grab and can get us setup pretty quickly
 
 ```
-git clone https://github.com/Laradock/laradock.git
-cd laradock
 cp env-example .env
-docker-compose up -d mariadb workspace
+docker-compose up -d workspace
 ```
 
 ## Workspace Bash
@@ -35,7 +33,6 @@ docker-compose exec workspace bash
 Once you are in the bash, you will be volume mounted to your code directory, from here issue the following commands
 
 ```
-composer global require hirak/prestissimo
 composer install -o
 ```
 

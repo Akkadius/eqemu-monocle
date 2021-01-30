@@ -17,3 +17,18 @@ services:
     tty: true
     networks:
       - backend
+  mariadb:
+    restart: unless-stopped
+    image: mariadb:latest
+    ports:
+      - ${IP_ADDRESS:-0.0.0.0}:3306:3306
+    volumes:
+      - ./mariadb:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE:-peq}
+      - MYSQL_USER=${DB_USERNAME:-eqemu}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-eqemu}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}
+      - TZ=America/Chicago
+    networks:
+      - backend
