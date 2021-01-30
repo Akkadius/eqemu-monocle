@@ -792,7 +792,7 @@ class ZoneDataDumpImportService
                   ->selectRaw('id + 1 as next_id')
                   ->where(
                       [
-                          ['id', '>', $npc_types_range_min],
+                          ['id', '>=', $npc_types_range_min],
                           ['id', '<', $npc_types_range_max],
                       ]
                   )
